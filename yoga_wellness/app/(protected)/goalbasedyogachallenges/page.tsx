@@ -1,313 +1,244 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { format, addDays } from 'date-fns'
+import React, { useState } from "react";
+import Image from "next/image";
+import { format, addDays } from "date-fns";
+import { Trophy, ArrowLeft, BarChart3 } from "lucide-react";
 
 interface Challenge {
-  days: number
-  title: string
-  imagesToShow: number
+  days: number;
+  title: string;
+  imagesToShow: number;
 }
 
 const CHALLENGES: Challenge[] = [
-  { days: 7, title: '7 Days Challenge', imagesToShow: 3 },
-  { days: 15, title: '15 Days Challenge', imagesToShow: 5 },
-  { days: 30, title: '30 Days Challenge', imagesToShow: 7 }
-  
-]
+  { days: 7, title: "7 Days Challenge", imagesToShow: 3 },
+  { days: 15, title: "15 Days Challenge", imagesToShow: 5 },
+  { days: 30, title: "30 Days Challenge", imagesToShow: 7 },
+];
 
-// Example mock leaderboard data for all challenges
 const mockLeaderboard = [
-  // 7-day challenge users
-  { username: 'fazalkarim', completed: 3, total: 7, challengeDays: 7 },
-  { username: 'Null', completed: 0, total: 7, challengeDays: 7 },
-  { username: 'Null', completed: 0, total: 7, challengeDays: 7 },
-  { username: 'Null', completed: 0, total: 7, challengeDays: 7 },
-  { username: 'Null', completed: 0, total: 7, challengeDays: 7 },
-  { username: 'Null', completed: 0, total: 7, challengeDays: 7 },
-
-  // 15-day challenge users
-  { username: 'fazalkarim', completed: 3, total: 15, challengeDays: 15 },
-  { username: 'Null', completed: 0, total: 15, challengeDays: 15 },
-  { username: 'Null', completed: 0, total: 15, challengeDays: 15 },
-  { username: 'Null', completed: 0, total: 15, challengeDays: 15 },
-  { username: 'Null', completed: 0, total: 15, challengeDays: 15 },
-  { username: 'Null', completed: 0, total: 15, challengeDays: 15 },
- 
-  // 30-day challenge users
-  { username: 'fazalkarim', completed: 3, total: 30, challengeDays: 30 },
-   
-]
+  { username: "fazalkarim", completed: 3, total: 7, challengeDays: 7 },
+  { username: "user2", completed: 5, total: 15, challengeDays: 15 },
+  { username: "user3", completed: 10, total: 30, challengeDays: 30 },
+];
 
 export default function Goalbasedyogachallenges() {
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null)
-  const [completedIndexes, setCompletedIndexes] = useState<number[]>([])
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [completedIndexes, setCompletedIndexes] = useState<number[]>([]);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const handleJoinChallenge = (challenge: Challenge) => {
-    setSelectedChallenge(challenge)
-    setCompletedIndexes([])
-    setStartDate(new Date())
-    setShowLeaderboard(false)
-  }
+    setSelectedChallenge(challenge);
+    setCompletedIndexes([]);
+    setStartDate(new Date());
+    setShowLeaderboard(false);
+  };
 
   const markAsDone = (index: number) => {
     if (!completedIndexes.includes(index)) {
-      setCompletedIndexes(prev => [...prev, index])
+      setCompletedIndexes((prev) => [...prev, index]);
     }
-  }
+  };
 
-  const getCurrentDay = (): number => {
-    if (!startDate) return 0
-    const diff = Math.floor((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    return Math.min(diff + 1, selectedChallenge?.days ?? 0)
-  }
+  const getCurrentDay = () => {
+    if (!startDate) return 0;
+    const diff = Math.floor(
+      (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return diff + 1;
+  };
 
-  const getEndDate = (): string => {
-    if (!startDate || !selectedChallenge) return ''
-    return format(addDays(startDate, selectedChallenge.days - 1), 'PPP')
-  }
+  const getEndDate = () => {
+    if (!startDate || !selectedChallenge) return "";
+    return format(addDays(startDate, selectedChallenge.days - 1), "PPP");
+  };
 
-
-// Define image sets
-const poseImagesMap: { [key: string]: string[] } = {
-  "7-day": [
-    '/mountainposee.jpg',
-    '/cat-cow.jpg',
-    '/Downward-Dog.jpg',
-  ],
-  "15-day": [
-    '/warrior2posee.jpg',
-    '/triangleposee.jpg',
-    '/Chair-Pose.jpg',
-    '/Bridge-Pose.jpg',
-    '/seatedforwardbendd.jpg',
-  ],
-  "30-day": [
-    '/crowposee.jpg',
-    '/camelposee.jpg',
-    '/wheelposee.jpg',
-    '/dancerposee.jpg',
-    '/pigeonposee.jpg',
-    '/boatposee.jpg',
-    '/lotusposee.jpg',
-  ],
-}
-const [zoomedIndex, setZoomedIndex] = useState<number | null>(null)
-
-const toggleZoom = (index: number) => {
-  setZoomedIndex(prev => (prev === index ? null : index))
-}
-
-const renderPoses = () => {
-  if (!selectedChallenge) return null
-
-  const posesToShow = poseImagesMap[`${selectedChallenge.days}-day`] || []
+  const poseImagesMap: { [key: string]: string[] } = {
+    "7-day": ["/mountainposee.jpg", "/cat-cow.jpg", "/Downward-Dog.jpg"],
+    "15-day": [
+      "/warrior2posee.jpg",
+      "/triangleposee.jpg",
+      "/Chair-Pose.jpg",
+      "/Bridge-Pose.jpg",
+      "/seatedforwardbendd.jpg",
+    ],
+    "30-day": [
+      "/crowposee.jpg",
+      "/camelposee.jpg",
+      "/wheelposee.jpg",
+      "/dancerposee.jpg",
+      "/pigeonposee.jpg",
+      "/boatposee.jpg",
+      "/lotusposee.jpg",
+    ],
+  };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {posesToShow.map((poseImage, index) => {
-        const isDone = completedIndexes.includes(index)
-        const isZoomed = zoomedIndex === index
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-12">
 
-        return (
-          <div
-  key={index}
-  className={`relative p-4 border rounded-lg shadow text-center bg-gray-100 transition-all duration-300 ${
-    isZoomed ? 'z-10 scale-110' : ''
-  }`}
-  onClick={() => toggleZoom(index)}
->
-  <p className="font-semibold mb-2">Pose {index + 1}</p>
-
-  <div className={`overflow-hidden rounded-lg transition-all duration-300 ${isZoomed ? 'h-[300px]' : 'h-[200px]'}`}>
-    <Image
-      src={poseImage}
-      alt={`Pose ${index + 1}`}
-      width={300}
-      height={200}
-      className={`rounded w-full h-full object-contain cursor-pointer transition-transform duration-300 ${
-        isZoomed ? 'scale-105' : 'scale-100'
-      }`}
-    />
-  </div>
-
-  {!isDone ? (
-    <button
-      onClick={(e) => {
-        e.stopPropagation()
-        markAsDone(index)
-      }}
-      className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-    >
-      Mark as Done
-    </button>
-  ) : (
-    <p className="mt-2 text-green-600 font-bold">✅ Completed</p>
-  )}
-</div>
-
-        )
-      })}
-    </div>
-  )
-}
-
-
-
-
-  const renderProgress = () => {
-    if (!selectedChallenge || !startDate) return null
-    const currentDay = getCurrentDay()
-    const percent = Math.round((completedIndexes.length / selectedChallenge.imagesToShow) * 100)
-
-    return (
-      <div className="my-6 bg-gray-100 p-4 rounded-lg ">
-        <p><strong>Start Date:</strong> {format(startDate, 'PPP')}</p>
-        <p><strong>End Date:</strong> {getEndDate()}</p>
-        <p><strong>Today is Day:</strong> {currentDay}</p>
-        <div className="w-full bg-gray-300 h-4 rounded mt-2">
-          <div className="bg-blue-500 h-4 rounded" style={{ width: `${percent}%` }} />
-        </div>
-        <p className="text-sm text-right mt-1">{percent}% Completed</p>
+      {/* HEADER */}
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-black tracking-tight">
+          Yoga Challenges
+        </h1>
+        <p className="text-slate-400 mt-3">
+          Track your progress and improve daily
+        </p>
       </div>
-    )
-  }
 
- const renderLeaderboard = () => {
-  if (!showLeaderboard || !selectedChallenge) return null
+      {/* CHALLENGES */}
+      {!selectedChallenge && (
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
 
-  // Filter users for the selected challenge days
-  const filteredLeaderboard = mockLeaderboard.filter(
-    user => user.challengeDays === selectedChallenge.days
-  )
+          {CHALLENGES.map((c, i) => (
+            <div
+              key={i}
+              onClick={() => handleJoinChallenge(c)}
+              className="cursor-pointer rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 hover:-translate-y-2 hover:bg-white/10 transition"
+            >
+              <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-amber-500/20 mb-5">
+                <Trophy className="text-amber-400" />
+              </div>
 
-  return (
-    <div className="mt-16 p-6 rounded-lg shadow-lg bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 text-white">
-      <h3 className="text-2xl font-bold mb-6 text-center drop-shadow-lg">{selectedChallenge.title} Leaderboard</h3>
-      <table className="w-full text-left border border-white/50 rounded overflow-hidden">
-        <thead>
-          <tr className="bg-white/20">
-            <th className="p-3 border border-white/30">Username</th>
-            <th className="p-3 border border-white/30">Days Completed</th>
-            <th className="p-3 border border-white/30">Total Days</th>
-            <th className="p-3 border border-white/30">Progress (%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredLeaderboard.length > 0 ? (
-            filteredLeaderboard.map((user, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-white/10' : 'bg-white/05'}>
-                <td className="p-3 border border-white/30">{user.username}</td>
-                <td className="p-3 border border-white/30">{user.completed}</td>
-                <td className="p-3 border border-white/30">{user.total}</td>
-                <td className="p-3 border border-white/30">
-                  {Math.round((user.completed / user.total) * 100)}%
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4} className="p-6 text-center text-white/80">
-                No data available for this challenge yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+              <h2 className="text-2xl font-bold mb-2">{c.title}</h2>
+              <p className="text-slate-400">
+                Complete {c.days} days yoga journey with structured poses.
+              </p>
 
-
-  return (
-    <div className="max-w-5xl mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6"> Yoga Challenges</h1>
-
-      {!selectedChallenge ? (
-        <div className="flex flex-col items-center gap-4">
-
-
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-  <div
-    onClick={() => handleJoinChallenge(CHALLENGES[0])}
-    className="cursor-pointer transition-transform hover:scale-105"
-  >
-    <Image
-      src="/7dchalllenge.jpg"
-      alt="7 Day Challenge"
-      width={200}
-      height={100}
-      className="rounded-lg shadow"
-    />
-    <p className="text-center font-bold mt-2 bg-gradient-to-r from-white via-white to-white text-gray-800 px-3 py-1  rounded-md shadow-sm">Posture Reset</p>
-  </div>
-  <div
-    onClick={() => handleJoinChallenge(CHALLENGES[1])}
-    className="cursor-pointer transition-transform hover:scale-105"
-  >
-    <Image
-      src="/15dchalllenge.jpg"
-      alt="15 Day Challenge"
-      width={200}
-      height={100}
-      className="rounded-lg shadow"
-    />
-      <p className="text-center font-bold mt-2 bg-gradient-to-r from-white via-white to-white text-gray-800 px-3 py-1  rounded-md shadow-sm">Strength & Flexibility</p>
-  </div>
-  <div
-    onClick={() => handleJoinChallenge(CHALLENGES[2])}
-    className="cursor-pointer transition-transform hover:scale-105"
-  >
-    <Image
-      src="/30dchalllenge.jpg"
-      alt="30 Day Challenge"
-      width={200}
-      height={100}
-      className="rounded-lg shadow"
-      
-    />
-      <p className="text-center font-bold mt-2 bg-gradient-to-r from-white via-white to-white text-gray-800 px-3 py-1  rounded-md shadow-sm">
-  Mind-Body Mastery
-</p>
-  </div>
-</div>
-
-
-
+              <div className="mt-6 text-sm text-amber-300 font-semibold">
+                Start Challenge →
+              </div>
+            </div>
+          ))}
         </div>
-      ) : (
-        <>
-          {renderProgress()}
-          {renderPoses()}
+      )}
 
-          <div className="mt-8 flex justify-between">
-            <button
-              onClick={() => {
-                setSelectedChallenge(null)
-                setCompletedIndexes([])
-                setStartDate(null)
-                setShowLeaderboard(false)
-              }}
-              className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              🔙 Back
-            </button>
+      {/* SELECTED CHALLENGE */}
+      {selectedChallenge && (
+        <div className="max-w-6xl mx-auto">
+
+          {/* TOP BAR */}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+
+            <div>
+              <h2 className="text-3xl font-bold text-amber-400">
+                {selectedChallenge.title}
+              </h2>
+              <p className="text-slate-400">
+                Day {getCurrentDay()} • Ends {getEndDate()}
+              </p>
+            </div>
 
             <button
-              onClick={() => setShowLeaderboard(prev => !prev)}
-              className="px-6 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+              onClick={() => setShowLeaderboard(!showLeaderboard)}
+              className="flex items-center gap-2 bg-white/10 px-5 py-3 rounded-xl hover:bg-white/20"
             >
-              📊 {showLeaderboard ? 'Hide' : 'View'} Leaderboard
+              <BarChart3 size={18} />
+              {showLeaderboard ? "Hide" : "Show"} Leaderboard
             </button>
           </div>
 
-          {renderLeaderboard()}
-        </>
+          {/* PROGRESS */}
+          <div className="mb-10 bg-white/5 border border-white/10 p-5 rounded-2xl">
+            <div className="w-full bg-white/10 h-3 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-400"
+                style={{
+                  width: `${(completedIndexes.length /
+                    selectedChallenge.imagesToShow) *
+                    100}%`,
+                }}
+              />
+            </div>
+            <p className="text-right text-sm mt-2 text-slate-400">
+              {Math.round(
+                (completedIndexes.length /
+                  selectedChallenge.imagesToShow) *
+                  100
+              )}
+              % completed
+            </p>
+          </div>
+
+          {/* POSes */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {(poseImagesMap[`${selectedChallenge.days}-day`] || []).map(
+              (img, i) => (
+                <div
+                  key={i}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center"
+                >
+                  <Image
+                    src={img}
+                    alt=""
+                    width={300}
+                    height={200}
+                    className="rounded-xl"
+                  />
+
+                  {!completedIndexes.includes(i) ? (
+                    <button
+                      onClick={() => markAsDone(i)}
+                      className="mt-4 w-full py-2 bg-emerald-500 rounded-xl hover:bg-emerald-600"
+                    >
+                      Mark Done
+                    </button>
+                  ) : (
+                    <p className="mt-4 text-emerald-400 font-bold">
+                      Completed ✓
+                    </p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* BACK */}
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => setSelectedChallenge(null)}
+              className="flex items-center gap-2 mx-auto bg-white/10 px-6 py-3 rounded-xl hover:bg-white/20"
+            >
+              <ArrowLeft size={18} />
+              Back
+            </button>
+          </div>
+
+          {/* LEADERBOARD */}
+          {showLeaderboard && (
+            <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl">
+              <h3 className="text-xl font-bold mb-4 text-amber-400">
+                Leaderboard
+              </h3>
+
+              <table className="w-full text-left text-sm">
+                <thead className="text-slate-400">
+                  <tr>
+                    <th>Name</th>
+                    <th>Progress</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockLeaderboard.map((u, i) => (
+                    <tr key={i} className="border-t border-white/10">
+                      <td className="py-2">{u.username}</td>
+                      <td>
+                        {u.completed}/{u.total}
+                      </td>
+                      <td>
+                        {Math.round((u.completed / u.total) * 100)}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       )}
     </div>
-  )
+  );
 }

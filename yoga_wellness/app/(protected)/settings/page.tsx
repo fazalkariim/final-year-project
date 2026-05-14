@@ -270,173 +270,255 @@ export default function Setting() {
     }
   };
 
-  return (
-    <div className="relative">
-      <div className="mt-4 flex items-center justify-center font-bold text-stone-700 text-2xl">
-        What is your Primary Goal!
-      </div>
+ return (
+  <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#1e293b] px-4 py-8">
+    
+    {/* Heading */}
+    <div className="text-center mb-3">
+      <h1 className="text-4xl md:text-5xl  font-bold bg-gradient-to-r from-red-400 to-orange-300 bg-clip-text text-transparent">
+        Select Your Primary Goal
+      </h1>
+      <p className="text-gray-400 mt-1 text-sm md:text-base">
+        Personalized yoga recommendations based on your wellness needs
+      </p>
+    </div>
 
-      {isComplete && selectedGoal ? (
-        <div className="mt-4 text-center bg-gradient-to-r from-white via-white to-red-200 p-6 rounded shadow-lg mx-auto w-2/4">
-          
-          
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-700 mb-6">
-              Your Selected Answers:
-            </h3>
-            <ul className="list-disc list-inside text-gray-600">
-              {selectedAnswers.map((answer, index) => (
-                <li key={index} className="mb-2">
-                  <strong>{index + 1}: </strong> {answer}
-                </li>
-              ))}
-            </ul>
-          </div>
+    {/* Result Section */}
+    {isComplete && selectedGoal ? (
+      <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
 
-
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-green-800 mb-4">
-              Suggested Yoga for you!
-            </h3>
-            <p className="text-blue-600 font-bold text-2xl">
-              {yogaSuggestions[selectedGoal]}
-            </p>
-          </div>
-          
-        </div>
-      ) : selectedGoal ? (
-        <div className="mt-3  text-center bg-gradient-to-r from-red-100 via-white to-white p-6 rounded shadow-lg mx-auto w-[600px]">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            {questions[selectedGoal][currentQuestionIndex].question}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            Your Wellness Summary
           </h2>
-          <div className="flex flex-col items-center space-y-4">
-            {questions[selectedGoal][currentQuestionIndex].options.map(
-              (option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleOptionClick(option)}
-                  className=" bg-white text-gray-800 rounded shadow-md w-2/4 p-1 hover:bg-red-400 hover:text-white hover:font-semibold hover:shadow-lg"
-                >
-                  {option}
-                </button>
-              )
-            )}
-          </div>
-          <div className="space-x-4 mt-6">
-            <button
-              onClick={handleBack}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-              disabled={currentQuestionIndex === 0}
-            >
-              Back
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="ml-[90px] mt-3">
-          {/* Images with text links */}
-          <div className="relative group">
-            <Image
-              src="/backpain.jpg"
-              alt="Back Pain Relief"
-              width={200}
-              height={200}
-              onClick={() => handleImageClick("BackPain")}
-              className="cursor-pointer h-[130px] rounded-full w-[130px] absolute ml-[350px] mt-[190px] transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-red-500"
-            />
-            <div className="absolute ml-[370px] mt-[320px] text-center text-red-400 font-semibold text-xl ">
-              Back Pain
-            </div>
-          </div>
-          <div className="relative group">
-            <Image
-              src="/strength.jpg"
-              alt="Strength Building"
-              width={200}
-              height={200}
-              onClick={() => handleImageClick("Strength")}
-              className="cursor-pointer h-[130px] rounded-full w-[130px] absolute ml-[50px] mt-[190px] transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-red-500"
-            />
-            <div className="absolute ml-[80px] mt-[320px] text-center text-red-400 font-semibold text-xl ">
-              Strength
-            </div>
-          </div>
 
-          <div className="relative group">
-            <Image
-              src="/flexibility.png"
-              alt="Flexibility Improvement"
-              width={200}
-              height={200}
-              onClick={() => handleImageClick("Flexibility")}
-              className="cursor-pointer h-[130px] rounded-full w-[130px] absolute ml-[200px] mt-[30px] transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-blue-500"
-            />
-            <div className="absolute ml-[230px] mt-[160px] text-center text-red-400 font-semibold text-xl ">
-              Flexibility
-            </div>
-          </div>
-
-
-          <div className="relative group">
-          <Image
-            src="/jointspain.jpg"
-            alt="Joint Pain Relief"
-            width={200}
-            height={200}
-            onClick={() => handleImageClick("JointPain")}
-            className="h-[130px] rounded-full w-[130px] absolute ml-[650px] mt-[190px] cursor-pointer transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-red-500"
-          />
-          <div className="absolute ml-[670px] mt-[320px] text-center text-red-400 font-semibold text-xl">
-            Joint Pain
+          <div className="px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 text-green-300 text-sm font-semibold">
+            Completed
           </div>
         </div>
 
+        {/* Answers */}
+        <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+          <h3 className="text-xl font-semibold text-white mb-5">
+            Selected Answers
+          </h3>
 
-        <div className="relative group">
-          <Image
-            src="/mindfullness.jpg"
-            alt="Mindfulness Training"
-            width={200}
-            height={200}
-            onClick={() => handleImageClick("Mindfulness")}
-            className="h-[130px] rounded-full w-[130px] absolute ml-[500px] mt-[30px] cursor-pointer transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-blue-500"
-          />
-          <div className="absolute ml-[520px] mt-[160px] text-center text-red-400 font-semibold text-xl">
-           Mindfulness
+          <div className="space-y-3">
+            {selectedAnswers.map((answer, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl p-4"
+              >
+                <div className="h-9 w-9 rounded-full bg-gradient-to-r from-red-500 to-orange-400 flex items-center justify-center text-white font-bold">
+                  {index + 1}
+                </div>
+
+                <p className="text-gray-200">{answer}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="relative group">
-          <Image
-            src="/neck pain.webp"
-            alt="Neck Pain Relief"
-            width={200}
-            height={200}
-            onClick={() => handleImageClick("NeckPain")}
-            className="h-[130px] rounded-full w-[130px] absolute ml-[950px] mt-[190px] cursor-pointer transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-red-500"
-          />
-          <div className="absolute ml-[970px] mt-[320px] text-center text-red-400 font-semibold text-xl">
-            Neck Pain
-          </div>
-        </div>
+        {/* Recommendation */}
+        <div className="mt-8 bg-gradient-to-r from-red-500/20 to-orange-400/20 border border-red-500/20 rounded-2xl p-8 text-center">
+          <h3 className="text-2xl font-semibold text-white mb-3">
+            Recommended Yoga Style
+          </h3>
 
-        <div className="relative group">
-          <Image
-            src="/relaxation.jpg"
-            alt="Relaxation Techniques"
-            width={200}
-            height={200}
-            onClick={() => handleImageClick("Relaxation")}
-            className="h-[130px] rounded-full w-[130px] absolute ml-[800px] mt-[30px] cursor-pointer transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:border-4 group-hover:border-blue-500"
-          /> 
-          <div className="absolute ml-[830px] mt-[160px] text-center text-red-400 font-semibold text-xl">
-            Relaxation
-          </div>
+          <p className="text-4xl font-bold bg-gradient-to-r from-red-400 to-orange-300 bg-clip-text text-transparent">
+            {yogaSuggestions[selectedGoal]}
+          </p>
+
+          <p className="text-gray-300 mt-4">
+            Based on your responses and wellness goals
+          </p>
         </div>
-        
+      </div>
+    ) : selectedGoal ? (
       
-        </div>
+// {/* Question Card */}
+<div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+
+  {/* Top Progress */}
+  <div className="p-4 border-b border-white/10">
+    
+    <div className="flex justify-between mb-2">
+      <span className="text-xs text-gray-300">
+        Question {currentQuestionIndex + 1} /{" "}
+        {questions[selectedGoal].length}
+      </span>
+
+      <span className="text-xs text-orange-300 font-semibold">
+        {selectedGoal}
+      </span>
+    </div>
+
+    <div className="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
+      <div
+        className="bg-gradient-to-r from-red-500 to-orange-400 h-full rounded-full transition-all duration-500"
+        style={{
+          width: `${
+            ((currentQuestionIndex + 1) /
+              questions[selectedGoal].length) *
+            100
+          }%`,
+        }}
+      />
+    </div>
+  </div>
+
+  {/* Question */}
+  <div className="p-5">
+    
+    <h2 className="text-xl font-bold text-white text-center leading-snug mb-6">
+      {questions[selectedGoal][currentQuestionIndex].question}
+    </h2>
+
+    {/* Options */}
+    <div className="grid gap-2.5">
+      {questions[selectedGoal][currentQuestionIndex].options.map(
+        (option, index) => (
+          <button
+            key={index}
+            onClick={() => handleOptionClick(option)}
+            className="group rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-left transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-400"
+          >
+            <div className="flex items-center justify-between">
+              
+              <span className="text-sm font-medium text-gray-200 group-hover:text-white">
+                {option}
+              </span>
+
+              <div className="h-6 w-6 rounded-full border border-gray-500 flex items-center justify-center text-xs text-gray-400 group-hover:border-white group-hover:text-white">
+                →
+              </div>
+
+            </div>
+          </button>
+        )
       )}
     </div>
-  );
+
+    {/* Back Button */}
+    <div className="mt-6">
+      <button
+        onClick={handleBack}
+        disabled={currentQuestionIndex === 0}
+        className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-sm text-white hover:bg-white/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        ← Back
+      </button>
+    </div>
+
+  </div>
+</div>
+    ) : (
+
+      // /* Goals Section */
+
+<div className="max-w-5xl mx-auto">
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    {[
+      {
+        key: "BackPain",
+        title: "Back Pain",
+        emoji: "🦴",
+        desc: "Improve posture & reduce discomfort",
+        gradient: "from-red-500 to-orange-400",
+      },
+      {
+        key: "Strength",
+        title: "Strength",
+        emoji: "💪",
+        desc: "Build power & body endurance",
+        gradient: "from-blue-500 to-cyan-400",
+      },
+      {
+        key: "Flexibility",
+        title: "Flexibility",
+        emoji: "🧘",
+        desc: "Increase mobility & balance",
+        gradient: "from-pink-500 to-rose-400",
+      },
+      {
+        key: "JointPain",
+        title: "Joint Pain",
+        emoji: "🦵",
+        desc: "Gentle recovery & joint support",
+        gradient: "from-yellow-500 to-amber-400",
+      },
+      {
+        key: "Mindfulness",
+        title: "Mindfulness",
+        emoji: "🧠",
+        desc: "Enhance focus & inner peace",
+        gradient: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        key: "NeckPain",
+        title: "Neck Pain",
+        emoji: "🙆",
+        desc: "Relieve tension & stiffness",
+        gradient: "from-emerald-500 to-green-400",
+      },
+      {
+        key: "Relaxation",
+        title: "Relaxation",
+        emoji: "🌙",
+        desc: "Calm your mind & body",
+        gradient: "from-indigo-500 to-blue-400",
+      },
+    ].map((goal, index) => (
+      <div
+        key={index}
+        onClick={() => handleImageClick(goal.key)}
+        className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-2xl text-center flex flex-col items-center justify-center"
+      >
+
+        {/* Glow Effect */}
+        <div
+          className={`absolute inset-0 opacity-10 bg-gradient-to-br ${goal.gradient}`}
+        />
+
+        {/* Emoji Icon */}
+        <div
+          className={`h-20 w-20 rounded-2xl bg-gradient-to-br ${goal.gradient} flex items-center justify-center text-4xl shadow-xl mb-6 group-hover:scale-110 transition-transform duration-300`}
+        >
+          {goal.emoji}
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center">
+
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {goal.title}
+          </h2>
+
+          <p className="text-sm text-gray-300 leading-relaxed max-w-[220px]">
+            {goal.desc}
+          </p>
+
+          {/* Button */}
+          <div
+            className={`mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${goal.gradient} px-4 py-2 text-sm font-semibold text-white shadow-lg`}
+          >
+            Start Assessment
+            <span className="group-hover:translate-x-1 transition-transform">
+              →
+            </span>
+          </div>
+        </div>
+
+        {/* Decorative Blur */}
+        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/5 blur-2xl" />
+
+      </div>
+    ))}
+  </div>
+</div>
+    )}
+  </div>
+);
 }

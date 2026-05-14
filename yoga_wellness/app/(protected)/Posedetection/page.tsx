@@ -1,50 +1,88 @@
 "use client";
 
-// Explore more features
-
 import React from "react";
 import { useRouter } from "next/navigation";
+import { Activity, Gamepad2, Trophy, ArrowRight } from "lucide-react";
 
 export default function PoseDetection() {
   const router = useRouter();
 
+  const cards = [
+    {
+      title: "Pose Detection & Monitoring",
+      desc: "Track your yoga posture in real-time using AI powered detection system.",
+      icon: <Activity size={38} className="text-emerald-400" />,
+      color: "emerald",
+      action: async () => {
+        try {
+          await fetch("http://localhost:5001/run_test2", {
+            method: "POST",
+          });
+        } catch (err) {
+          alert("Failed to call API: " + err);
+        }
+      },
+    },
+    {
+      title: "Wellness Games",
+      desc: "Improve focus and mental health through interactive mindfulness games.",
+      icon: <Gamepad2 size={38} className="text-violet-400" />,
+      color: "violet",
+      action: () => router.push("/mentalhealthnwellnessgames"),
+    },
+    {
+      title: "Goal Based Yoga Challenges",
+      desc: "Follow structured yoga challenges based on your fitness goals.",
+      icon: <Trophy size={38} className="text-amber-400" />,
+      color: "amber",
+      action: () => router.push("/goalbasedyogachallenges"),
+    },
+  ];
+
   return (
-    <div className="pt-6">
-      <div className="max-w-xl mx-auto bg-slate-100 shadow-lg rounded-lg p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-14 text-white">
+      <div className="mx-auto max-w-6xl">
         
-        <div className="flex flex-col gap-6">
-          <button
-            onClick={async () => {
-              try {
-                const res = await fetch('http://localhost:5001/run_test2', {
-                  method: 'POST',
-                });
-                const data = await res.json();
-                if (data.success) {
-                  // No alertc
-                } else {
-                  // Optionally, you can still alert errors, or also remove this if you want silence on error too
-                }
-              } catch (err) {
-                alert('Failed to call API: ' + err);
-              }
-            }}
-            className="px-6 py-3 hover:bg-red-600 text-white font-semibold rounded-lg bg-red-400 transition"
-          >
-            Pose Detection & Monitoring
-          </button>
-          <button
-            onClick={() => router.push("/mentalhealthnwellnessgames")}
-            className="px-6 py-3 hover:bg-red-600 text-white font-semibold rounded-lg bg-red-400 transition"
-          >
-            Wellness Games
-          </button>
-          <button
-            onClick={() => router.push("/goalbasedyogachallenges")}
-            className="px-6 py-3 hover:bg-red-600 text-white font-semibold rounded-lg bg-red-400 transition"
-          >
-            Goal Based Yoga Challenges
-          </button>
+        {/* HEADER */}
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-black tracking-tight">
+            Explore Advanced Features
+          </h1>
+          <p className="mt-4 text-slate-400 text-lg">
+            Choose a module to continue your yoga journey
+          </p>
+        </div>
+
+        {/* CARDS */}
+        <div className="grid gap-8 md:grid-cols-3">
+          {cards.map((item, i) => (
+            <div
+              key={i}
+              onClick={item.action}
+              className="group cursor-pointer rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:bg-white/10 hover:border-white/20"
+            >
+              {/* ICON */}
+              <div
+                className={`mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10`}
+              >
+                {item.icon}
+              </div>
+
+              {/* TITLE */}
+              <h2 className="mb-3 text-2xl font-bold">{item.title}</h2>
+
+              {/* DESCRIPTION */}
+              <p className="text-slate-400 leading-relaxed">
+                {item.desc}
+              </p>
+
+              {/* BUTTON LOOK */}
+              <div className="mt-8 flex items-center gap-2 text-sm font-semibold text-white/70 group-hover:text-white">
+                Open Feature
+                <ArrowRight size={18} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

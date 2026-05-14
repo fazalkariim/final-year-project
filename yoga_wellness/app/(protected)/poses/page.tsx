@@ -137,14 +137,15 @@ const poses: Pose[] = [
   }
 ]
 
-
 export default function PosePage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [expanded, setExpanded] = useState<number[]>([])
 
   const toggleDescription = (index: number) => {
     setExpanded((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index)
+        ? prev.filter((i) => i !== index)
+        : [...prev, index]
     )
   }
 
@@ -153,55 +154,87 @@ export default function PosePage() {
   )
 
   return (
-    <div className="min-h-screen bg-sky-200 py-10 px-6">
-      {/* Search Input */}
-      <div className="max-w-xl mx-auto mb-8">
-        <input
-          type="text"
-          placeholder="Search poses..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#1e293b] px-6 py-8">
+      
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-white">
+          Yoga Pose Library
+        </h1>
+
+        <p className="text-gray-300 mt-2 text-sm md:text-base">
+          Explore different yoga styles, improve flexibility & mindfulness
+        </p>
       </div>
 
-      {/* Pose Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Search */}
+      <div className="max-w-2xl mx-auto mb-10">
+        <div className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl p-3 shadow-xl">
+          <input
+            type="text"
+            placeholder="Search yoga poses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-transparent text-white placeholder:text-gray-400 outline-none px-3 py-2"
+          />
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
         {filteredPoses.map((pose, index) => {
           const isExpanded = expanded.includes(index)
+
           return (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4"
+              className="group bg-white/10 border border-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-all duration-300"
             >
-              <h2 className="text-xl font-semibold text-gray-700">
-                {pose.title}
-              </h2>
+              
+              {/* Video */}
+              <div className="relative overflow-hidden">
+                <video
+                  controls
+                  className="w-full h-[220px] object-cover"
+                >
+                  <source src={pose.src} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
 
-              {/* Video with fixed size and object-fit */}
-              <video
-                controls
-                className="w-full rounded-lg shadow-sm"
-                style={{ height: "180px", objectFit: "contain" }}
-              >
-                <source src={pose.src} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+                <div className="absolute top-4 left-4 bg-red-500/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg">
+                  Yoga Session
+                </div>
+              </div>
 
-              <ul className="list-disc list-inside text-gray-600 text-sm leading-relaxed">
-                {(isExpanded ? pose.description : pose.description.slice(0, 2)).map(
-                  (line, i) => (
-                    <li key={i}>{line}</li>
-                  )
-                )}
-              </ul>
+              {/* Content */}
+              <div className="p-5">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  {pose.title}
+                </h2>
 
-              <button
-                onClick={() => toggleDescription(index)}
-                className="text-blue-500 hover:underline text-sm w-max"
-              >
-                {isExpanded ? "Show less" : "Show more"}
-              </button>
+                <ul className="space-y-2 text-sm text-gray-300 leading-relaxed">
+                  {(isExpanded
+                    ? pose.description
+                    : pose.description.slice(0, 3)
+                  ).map((line, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2"
+                    >
+                      <span className="text-red-400 mt-1">•</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Button */}
+                <button
+                  onClick={() => toggleDescription(index)}
+                  className="mt-5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-300 shadow-lg"
+                >
+                  {isExpanded ? "Show Less" : "Show More"}
+                </button>
+              </div>
             </div>
           )
         })}

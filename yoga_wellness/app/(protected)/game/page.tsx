@@ -3,11 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
-// grop session
-
 export default function Groupsession() {
   const [socket, setSocket] = useState<any>(null);
-  const [role, setRole] = useState(""); // "host" or "join"
+  const [role, setRole] = useState("join");
   const [isStreaming, setIsStreaming] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
   const [message, setMessage] = useState("");
@@ -20,12 +18,21 @@ export default function Groupsession() {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // ✅ SOCKET FIX
   useEffect(() => {
-    const socketIo = io("http://localhost:3000", { path: "/api/socket" });
+    const socketIo = io({
+      path: "/api/socket",
+      transports: ["websocket"],
+    });
+
     setSocket(socketIo);
 
-    socketIo.on("chatMessage", (msg) => {
+    socketIo.on("chatMessage", (msg: string) => {
       setMessages((prev) => [...prev, msg]);
+    });
+
+    socketIo.on("connect_error", (err) => {
+      console.log("Socket error:", err.message);
     });
 
     return () => {
@@ -33,157 +40,192 @@ export default function Groupsession() {
     };
   }, []);
 
+  // ---------------- STREAM ----------------
   const startStreaming = async () => {
-    setIsStreaming(true);
-    peerConnection.current = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
+    try {
+      setIsStreaming(true);
 
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    streamRef.current = stream;
-    stream.getTracks().forEach((track) => peerConnection.current?.addTrack(track, stream));
+      peerConnection.current = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      });
 
-    if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
+      streamRef.current = stream;
+
+      stream.getTracks().forEach((track) => {
+        peerConnection.current?.addTrack(track, stream);
+      });
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Camera error:", err);
+      alert("Camera permission denied or not available");
+    }
   };
 
   const stopStreaming = () => {
     setIsStreaming(false);
-    streamRef.current?.getTracks().forEach((track) => track.stop());
+
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+
     peerConnection.current?.close();
     peerConnection.current = null;
   };
 
+  // ---------------- CONTROLS ----------------
   const toggleMic = () => {
-    const audioTrack = streamRef.current?.getAudioTracks()[0];
-    if (audioTrack) {
-      audioTrack.enabled = !audioTrack.enabled;
-      setIsMicOn(audioTrack.enabled);
+    const audio = streamRef.current?.getAudioTracks()[0];
+    if (audio) {
+      audio.enabled = !audio.enabled;
+      setIsMicOn(audio.enabled);
     }
   };
 
   const toggleCamera = () => {
-    const videoTrack = streamRef.current?.getVideoTracks()[0];
-    if (videoTrack) {
-      videoTrack.enabled = !videoTrack.enabled;
-      setIsCameraOn(videoTrack.enabled);
+    const video = streamRef.current?.getVideoTracks()[0];
+    if (video) {
+      video.enabled = !video.enabled;
+      setIsCameraOn(video.enabled);
     }
   };
 
+  // ---------------- CHAT ----------------
   const sendMessage = () => {
-    if (message.trim() === "" || !socket) return;
-  
-    // Emit the message
+    if (!message.trim() || !socket) return;
+
     socket.emit("chatMessage", message);
-  
-    // Show own message immediately
     setMessages((prev) => [...prev, message]);
-  
-    // Clear input
     setMessage("");
-  
-  
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-5">
-      <h1 className="text-2xl font-bold mb-4">Live Yoga Group Session</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-10">
 
-      {/* Select Role */}
+      {/* HEADER */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-black">Group Yoga Session</h1>
+        <p className="text-slate-400 mt-2">
+          Join, stream & meditate together
+        </p>
+      </div>
+
+      {/* ROLE */}
       {!role && (
-        <div className="mb-4 flex items-center justify-center space-x-7 ">
-          {/* <p className="text-lg mb-2">Select your role:</p> */}
-          {/* <button onClick={() => setRole("host")} className="bg-blue-500 text-white px-4 py-2 rounded mr-2">
-            Host a Session
-          </button> */}
-          <button onClick={() => setRole("join")} className="bg-green-500 text-white px-4 py-2 rounded">
-            Join a Session
+        <div className="flex justify-center">
+          <button
+            onClick={() => setRole("join")}
+            className="px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 font-semibold shadow-lg"
+          >
+            Join Session
           </button>
         </div>
       )}
 
-      {/* Video Streaming */}
+      {/* MAIN */}
       {role && (
-  <div className="flex gap-6 mt-6">
-    {/* Left Side: Video and Controls */}
-    <div className="flex-1">
-      <div className="flex gap-4 mb-4">
-        <video ref={localVideoRef} autoPlay playsInline className="w-1/2 border rounded-lg" />
-        <video ref={remoteVideoRef} autoPlay playsInline className="w-1/2 border rounded-lg" />
-      </div>
+        <div className="grid md:grid-cols-3 gap-6">
 
-      <div className="flex gap-4">
-        {!isStreaming ? (
-          <button
-            onClick={startStreaming}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            join Stream
-          </button>
-        ) : (
-          <button
-            onClick={stopStreaming}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Stop Streaming
-          </button>
-        )}
+          {/* VIDEO SECTION */}
+          <div className="md:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
 
-        <button
-          onClick={toggleMic}
-          className={`px-4 py-2 rounded ${isMicOn ? "bg-gray-500" : "bg-red-500 text-white"}`}
-        >
-          {isMicOn ? "Mute Mic" : "Unmute Mic"}
-        </button>
+            <div className="grid grid-cols-2 gap-4">
+              <video
+                ref={localVideoRef}
+                autoPlay
+                playsInline
+                className="h-72 w-full rounded-2xl bg-black border border-white/10"
+              />
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                className="h-72 w-full rounded-2xl bg-black border border-white/10"
+              />
+            </div>
 
-        <button
-          onClick={toggleCamera}
-          className={`px-4 py-2 rounded ${isCameraOn ? "bg-gray-500" : "bg-red-500 text-white"}`}
-        >
-          {isCameraOn ? "Turn Camera Off" : "Turn Camera On"}
-        </button>
-      </div>
-    </div>
+            {/* CONTROLS */}
+            <div className="flex flex-wrap gap-3 mt-6 justify-center">
 
-    {/* Right Side: Chat Box */}
-    {/* Right Side: Chat Box - Only show when streaming */}
-{isStreaming && (
-  <div className="w-1/3  p-4 rounded  h-fit">
-    <h2 className="text-xl font-semibold mb-2">Live Chat</h2>
-    <div className="h-64 overflow-y-auto border p-2 rounded bg-white mb-2">
-      {messages.map((msg, index) => (
-        <p key={index} className="text-sm p-1 rounded mb-1 border-b">
-          {msg}
-        </p>
-      ))}
-    </div>
-    <div className="flex">
-    <input
-  type="text"
-  value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  }}
-  className="flex-1 p-2 border rounded"
-  placeholder="Type a message..."
-/>
+              {!isStreaming ? (
+                <button
+                  onClick={startStreaming}
+                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 font-semibold"
+                >
+                  Join Stream
+                </button>
+              ) : (
+                <button
+                  onClick={stopStreaming}
+                  className="px-5 py-3 rounded-xl bg-red-500 hover:bg-red-600 font-semibold"
+                >
+                  Stop
+                </button>
+              )}
 
-      <button onClick={sendMessage} className="ml-2 bg-blue-500 text-white px-4 py-2 rounded">
-        Send
-      </button>
-    </div>
-  </div>
-)}
+              <button
+                onClick={toggleMic}
+                className={`px-5 py-3 rounded-xl ${
+                  isMicOn ? "bg-slate-700" : "bg-red-500"
+                }`}
+              >
+                {isMicOn ? "Mute Mic" : "Unmute"}
+              </button>
 
+              <button
+                onClick={toggleCamera}
+                className={`px-5 py-3 rounded-xl ${
+                  isCameraOn ? "bg-slate-700" : "bg-red-500"
+                }`}
+              >
+                {isCameraOn ? "Camera Off" : "Camera On"}
+              </button>
+            </div>
+          </div>
 
+          {/* CHAT */}
+          {isStreaming && (
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-5 backdrop-blur-xl flex flex-col">
 
-  </div>
-)}
+              <h2 className="text-xl font-bold mb-4">Live Chat</h2>
 
+              <div className="flex-1 overflow-y-auto space-y-2 max-h-[400px]">
+                {messages.map((msg, i) => (
+                  <div key={i} className="bg-white/10 px-3 py-2 rounded-xl">
+                    {msg}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-white/10"
+                  placeholder="Type message..."
+                />
+                <button
+                  onClick={sendMessage}
+                  className="px-4 py-3 rounded-xl bg-blue-500 hover:bg-blue-600"
+                >
+                  Send
+                </button>
+              </div>
+
+            </div>
+          )}
+
+        </div>
+      )}
     </div>
   );
 }
