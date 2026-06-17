@@ -108,10 +108,10 @@ export default function Groupsession() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-10">
+    <div className="min-h-[519px] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-4">
 
       {/* HEADER */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-5">
         <h1 className="text-4xl font-black">Group Yoga Session</h1>
         <p className="text-slate-400 mt-2">
           Join, stream & meditate together

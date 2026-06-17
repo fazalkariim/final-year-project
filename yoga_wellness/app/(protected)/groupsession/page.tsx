@@ -163,7 +163,7 @@ const GroupSessionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-10 text-white">
+    <div className="min-h-[519px] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-3 text-white">
       <div className="mx-auto max-w-6xl">
         {/* HEADER */}
 
@@ -172,7 +172,7 @@ const GroupSessionPage = () => {
             Meditation & Breathing
           </h1>
 
-          <p className="mt-4 text-lg text-slate-400">
+          <p className="mt-1 text-lg text-slate-400">
             Relax your mind, improve focus, and build mindfulness.
           </p>
         </div>

@@ -143,10 +143,6 @@ export default function Mentalhealthnwellnessgames() {
     setPuzzleTiles(copy)
   }
 
-  const getCols = () => {
-    if (!puzzleDifficulty) return ''
-    return `grid-cols-${puzzleDifficulties[puzzleDifficulty].cols}`
-  }
 
   const getPuzzleImage = (tile: number | null) => {
     if (!tile) return null
@@ -275,25 +271,34 @@ export default function Mentalhealthnwellnessgames() {
               </div>
 
               {/* PUZZLE BOARD */}
-              <div className={`grid ${getCols()} gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl`}>
-                {puzzleTiles.map((tile, i) => (
-                  <div
-                    key={i}
-                    onClick={() => moveTile(i)}
-                    className="w-24 h-24 rounded-xl bg-black/40 flex items-center justify-center cursor-pointer hover:scale-105 transition"
-                  >
-                    {tile && (
-                      <Image
-                        src={getPuzzleImage(tile) || ''}
-                        alt=""
-                        width={96}
-                        height={96}
-                        className="rounded-lg"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
+           
+<div
+  className={`
+    grid gap-2 p-4 bg-white/5 border border-white/10 rounded-2xl
+
+    ${puzzleDifficulty === 'easy' ? 'grid-cols-3' : ''}
+    ${puzzleDifficulty === 'medium' ? 'grid-cols-3' : ''}
+    ${puzzleDifficulty === 'hard' ? 'grid-cols-4' : ''}
+  `}
+>
+  {puzzleTiles.map((tile, i) => (
+    <div
+      key={i}
+      onClick={() => moveTile(i)}
+      className="w-24 h-24 rounded-xl bg-black/40 flex items-center justify-center cursor-pointer hover:scale-105 transition"
+    >
+      {tile && (
+        <Image
+          src={getPuzzleImage(tile) || ''}
+          alt=""
+          width={96}
+          height={96}
+          className="rounded-lg"
+        />
+      )}
+    </div>
+  ))}
+</div>
 
             </div>
           )}

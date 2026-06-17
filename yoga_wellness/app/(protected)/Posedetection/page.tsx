@@ -40,11 +40,11 @@ export default function PoseDetection() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-14 text-white">
+    <div className="min-h-[519px] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-4 text-white">
       <div className="mx-auto max-w-6xl">
         
         {/* HEADER */}
-        <div className="mb-12 text-center">
+        <div className="mb-7 text-center">
           <h1 className="text-5xl font-black tracking-tight">
             Explore Advanced Features
           </h1>
